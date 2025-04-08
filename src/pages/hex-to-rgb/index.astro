@@ -1,0 +1,37 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Input from "../../components/ui/input.astro";
+---
+
+<Layout
+  title="HEX to RGB - free online tools"
+  description="Easily and quickly convert HEX to RGB online for free."
+>
+  <article class="p-6 bg-zinc-950 h-screen text-white">
+    <h1 class="text-3xl font-bold">HEX to RGB</h1>
+    <Input id="hex" type="text" placeholder="Hex code" className="mt-2" />
+    <Input id="rgb" type="text" placeholder="RGB" readonly className="mt-2" />
+  </article>
+</Layout>
+
+<script is:inline>
+  const hexInput = document.getElementById("hex");
+  const rgbInput = document.getElementById("rgb");
+
+  hexInput.addEventListener("input", () => {
+    const hex = hexInput.value;
+    const rgb = hexToRgb(hex);
+    rgbInput.value = rgb ? `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` : "";
+  });
+
+  function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
+  }
+</script>

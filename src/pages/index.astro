@@ -1,0 +1,31 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const tools = [
+  {
+    name: "HEX to RGB",
+    href: "/hex-to-rgb",
+  },
+];
+---
+
+<Layout
+  title="Thingbomb - simple, quick tools"
+  description="Thingbomb lets you get things done by giving you fast, simple tools that cost nothing."
+>
+  <article class="p-6 bg-zinc-950 h-screen text-white">
+    <h1 class="text-3xl font-bold">Thingbomb</h1>
+    <div class="tools flex flex-col gap-4 mt-3">
+      {
+        tools.map((tool) => (
+          <a
+            href={tool.href}
+            class="border-1 border-zinc-800 p-2 rounded-xl w-fit px-4 text-sm hover:bg-zinc-800"
+          >
+            <h2 class="text-lg font-medium">{tool.name}</h2>
+          </a>
+        ))
+      }
+    </div>
+  </article>
+</Layout>
