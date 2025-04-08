@@ -1,0 +1,26 @@
+---
+import Input from "../../components/ui/input.astro";
+import ToolLayout from "../../layouts/ToolLayout.astro";
+---
+
+<ToolLayout
+  title="Text reverser - free online tools"
+  shortTitle="Text reverser"
+  description="Reverse text quickly with this free online tool."
+>
+  <Input id="text" type="text" placeholder="Enter text" className="mt-2" />
+  <Input id="result" type="text" placeholder="Result" className="mt-2" />
+</ToolLayout>
+
+<script is:inline>
+  const text = document.getElementById("text");
+  const result = document.getElementById("result");
+
+  text.addEventListener("input", () => {
+    result.value = text.value.split("").reverse().join("");
+  });
+
+  result.addEventListener("input", () => {
+    text.value = result.value.split("").reverse().join("");
+  });
+</script>

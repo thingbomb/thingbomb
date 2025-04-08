@@ -6,6 +6,10 @@ const tools = [
     name: "Color Converter",
     href: "/color",
   },
+  {
+    name: "Text reverser",
+    href: "/reverse",
+  },
 ];
 ---
 
@@ -15,7 +19,7 @@ const tools = [
 >
   <article class="p-6 bg-zinc-950 h-fit text-white">
     <h1 class="text-3xl font-bold !m-0">Thingbomb</h1>
-    <div class="tools flex flex-col gap-4 mt-3">
+    <div class="tools flex gap-2 flex-wrap mt-3">
       {
         tools.map((tool) => (
           <a
