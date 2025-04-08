@@ -1,0 +1,27 @@
+---
+import { cn } from "../../lib/utils";
+
+interface Props {
+  className?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  readonly?: boolean;
+  id?: string;
+}
+
+const { className, placeholder, disabled, readonly, id, ...props } =
+  Astro.props;
+---
+
+<textarea
+  data-slot="textarea"
+  style="padding: 10px;"
+  class={cn(
+    "border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+    className
+  )}
+  disabled={disabled}
+  readonly={readonly}
+  id={id}
+  placeholder={placeholder}
+  {...props}></textarea>

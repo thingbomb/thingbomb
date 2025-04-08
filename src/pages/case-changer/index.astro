@@ -1,0 +1,72 @@
+---
+import ToolLayout from "../../layouts/ToolLayout.astro";
+import Textarea from "../../components/ui/textarea.astro";
+---
+
+<ToolLayout
+  title="Case changer - free online tools"
+  shortTitle="Case changer"
+  description="Change the case of text quickly with this free online tool."
+>
+  <Textarea id="text" placeholder="Enter text" className="mt-2" />
+  <div class="flex gap-2 items-center justify-center">
+    <button
+      id="lowercase"
+      disabled
+      class="h-9 rounded-md border-1 mt-2 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
+    >
+      Start typing
+    </button>
+    <button
+      id="uppercase"
+      disabled
+      style="display: none;"
+      class="h-9 rounded-md border-1 mt-2 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 items-center justify-center"
+    >
+      Start typing
+    </button>
+  </div>
+  <Textarea
+    id="result"
+    placeholder="Changed text"
+    disabled
+    readonly
+    className="mt-2"
+  />
+</ToolLayout>
+
+<script is:inline>
+  const text = document.getElementById("text");
+  const lowercase = document.getElementById("lowercase");
+  const uppercase = document.getElementById("uppercase");
+
+  text.addEventListener("input", () => {
+    lowercase.textContent =
+      text.value.length === 0 ? "Start typing" : `Lowercase`;
+    lowercase.disabled = text.value.length === 0;
+    uppercase.textContent =
+      text.value.length === 0 ? "Start typing" : `Uppercase`;
+    uppercase.disabled = text.value.length === 0;
+    uppercase.style.display = text.value.length === 0 ? "none" : "flex";
+  });
+
+  lowercase.addEventListener("click", () => {
+    const result = text.value.toLowerCase();
+    document.getElementById("result").value = result;
+    if (result.length <= 0) {
+      document.getElementById("result").disabled = true;
+    } else {
+      document.getElementById("result").disabled = false;
+    }
+  });
+
+  uppercase.addEventListener("click", () => {
+    const result = text.value.toUpperCase();
+    document.getElementById("result").value = result;
+    if (result.length <= 0) {
+      document.getElementById("result").disabled = true;
+    } else {
+      document.getElementById("result").disabled = false;
+    }
+  });
+</script>
