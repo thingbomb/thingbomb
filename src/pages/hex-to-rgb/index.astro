@@ -1,18 +1,15 @@
 ---
-import Layout from "../../layouts/Layout.astro";
 import Input from "../../components/ui/input.astro";
+import ToolLayout from "@/layouts/ToolLayout.astro";
 ---
 
-<Layout
+<ToolLayout
   title="HEX to RGB - free online tools"
   description="Easily and quickly convert HEX to RGB online for free."
 >
-  <article class="p-6 bg-zinc-950 h-screen text-white">
-    <h1 class="text-3xl font-bold">HEX to RGB</h1>
-    <Input id="hex" type="text" placeholder="Hex code" className="mt-2" />
-    <Input id="rgb" type="text" placeholder="RGB" readonly className="mt-2" />
-  </article>
-</Layout>
+  <Input id="hex" type="text" placeholder="Hex code" className="mt-2" />
+  <Input id="rgb" type="text" placeholder="RGB" readonly className="mt-2" />
+</ToolLayout>
 
 <script is:inline>
   const hexInput = document.getElementById("hex");
