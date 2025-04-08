@@ -37,3 +37,38 @@ const { title, description } = Astro.props;
 <meta property="twitter:url" content={Astro.url} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
+
+<script is:inline>
+  document.addEventListener("keydown", (e) => {
+    if (
+      document.activeElement.tagName !== "INPUT" &&
+      document.activeElement.tagName !== "TEXTAREA"
+    ) {
+      if (
+        e.key == "/" &&
+        !e.metaKey &&
+        !e.shiftKey &&
+        !e.altKey &&
+        !e.ctrlKey
+      ) {
+        e.preventDefault();
+        window.location.href = "/";
+      }
+    }
+    if (
+      e.key == "Escape" &&
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.altKey &&
+      !e.ctrlKey
+    ) {
+      const selectedInputOrTextarea = document.activeElement;
+      if (
+        selectedInputOrTextarea.tagName === "INPUT" ||
+        selectedInputOrTextarea.tagName === "TEXTAREA"
+      ) {
+        selectedInputOrTextarea.blur();
+      }
+    }
+  });
+</script>
