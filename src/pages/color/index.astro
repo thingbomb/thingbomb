@@ -1,0 +1,182 @@
+---
+import Input from "../../components/ui/input.astro";
+import ToolLayout from "../../layouts/ToolLayout.astro";
+---
+
+<ToolLayout
+  title="Color converter - free online tools"
+  description="Convert many color formats quickly with this free online tool."
+>
+  <Input
+    id="color-input"
+    type="text"
+    placeholder="Enter a color (hex, rgb, hsl, name...)"
+    className="mt-2"
+  />
+
+  <div
+    id="color-preview"
+    style="display: none;"
+    class="mt-2 h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105"
+  >
+    <p
+      id="color-preview-text"
+      class="text-lg font-medium w-full h-full flex items-center justify-center"
+    >
+      Color Preview
+    </p>
+  </div>
+
+  <div
+    id="copy-options"
+    class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2"
+    style="display: none;"
+  >
+    <div
+      id="copy-hex"
+      class="h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
+    >
+      HEX
+    </div>
+    <div
+      id="copy-rgb"
+      class="h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
+    >
+      RGB
+    </div>
+    <div
+      id="copy-hsl"
+      class="h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
+    >
+      HSL
+    </div>
+  </div>
+</ToolLayout>
+
+<script is:inline>
+  const colorInput = document.getElementById("color-input");
+  const colorPreview = document.getElementById("color-preview");
+  const previewText = document.getElementById("color-preview-text");
+
+  const copyHex = document.getElementById("copy-hex");
+  const copyRgb = document.getElementById("copy-rgb");
+  const copyHsl = document.getElementById("copy-hsl");
+  const copyOptions = document.getElementById("copy-options");
+
+  colorInput.addEventListener("input", () => {
+    const input = colorInput.value.trim();
+    const parsed = parseColor(input);
+
+    if (parsed) {
+      const { hex, rgb, hsl } = parsed;
+
+      colorPreview.style.backgroundColor = hex;
+      previewText.textContent = rgb;
+      colorPreview.style.color = getTextColor(hex);
+      colorPreview.style.display = "block";
+      copyOptions.style.display = "grid";
+
+      copyHex.textContent = hex;
+      copyRgb.textContent = rgb;
+      copyHsl.textContent = hsl;
+
+      setupCopy(copyHex, hex);
+      setupCopy(copyRgb, rgb);
+      setupCopy(copyHsl, hsl);
+    } else {
+      colorPreview.style.display = "none";
+      copyOptions.style.display = "none";
+    }
+  });
+
+  function setupCopy(el, text) {
+    el.onclick = () => {
+      navigator.clipboard.writeText(text);
+      const original = el.textContent;
+      el.textContent = "Copied!";
+      setTimeout(() => (el.textContent = original), 1000);
+    };
+  }
+
+  function parseColor(input) {
+    const temp = document.createElement("div");
+    temp.style.color = input;
+    document.body.appendChild(temp);
+
+    const computed = getComputedStyle(temp).color;
+    document.body.removeChild(temp);
+
+    const match = computed.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!match) return null;
+
+    const r = parseInt(match[1]),
+      g = parseInt(match[2]),
+      b = parseInt(match[3]);
+    const hex = rgbToHex(r, g, b);
+    const rgb = `rgb(${r}, ${g}, ${b})`;
+    const hsl = rgbToHsl(r, g, b);
+
+    return { hex, rgb, hsl };
+  }
+
+  function rgbToHex(r, g, b) {
+    return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b),
+      min = Math.min(r, g, b);
+    let h = 0,
+      s,
+      l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h /= 6;
+    } else {
+      s = 0;
+    }
+
+    return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+  }
+
+  function getTextColor(bgColor) {
+    const tempEl = document.createElement("div");
+    tempEl.style.color = bgColor;
+    document.body.appendChild(tempEl);
+    const computed = getComputedStyle(tempEl).color;
+    document.body.removeChild(tempEl);
+
+    const match = computed.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!match) return "black";
+
+    const [r, g, b] = match.slice(1, 4).map(Number);
+
+    const toLinear = (c) => {
+      c /= 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    };
+    const luminance =
+      0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+
+    const whiteContrast = 1.05 / (luminance + 0.05);
+    const blackContrast = (luminance + 0.05) / 0.05;
+
+    return whiteContrast > blackContrast ? "white" : "black";
+  }
+</script>
