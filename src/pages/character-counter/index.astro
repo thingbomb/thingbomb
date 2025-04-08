@@ -1,0 +1,41 @@
+---
+import Input from "../../components/ui/input.astro";
+import ToolLayout from "../../layouts/ToolLayout.astro";
+---
+
+<ToolLayout
+  title="Character counter - free online tools"
+  shortTitle="Character counter"
+  description="Count characters quickly with this free online tool."
+>
+  <Input id="text" type="text" placeholder="Enter text" className="mt-2" />
+  <button
+    id="character-count"
+    disabled
+    class="h-9 rounded-md border-1 mt-2 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
+  >
+    Start typing
+  </button>
+</ToolLayout>
+
+<script is:inline>
+  const text = document.getElementById("text");
+  const characterCount = document.getElementById("character-count");
+
+  text.addEventListener("input", () => {
+    characterCount.textContent =
+      text.value.length === 0
+        ? "Start typing"
+        : `${text.value.length} ${text.value.length === 1 ? "character" : "characters"}`;
+    characterCount.disabled = text.value.length === 0;
+  });
+
+  characterCount.addEventListener("click", () => {
+    navigator.clipboard.writeText(
+      text.value.length === 0 ? "0" : text.value.length.toString()
+    );
+    const original = characterCount.textContent;
+    characterCount.textContent = "Copied!";
+    setTimeout(() => (characterCount.textContent = original), 1000);
+  });
+</script>
