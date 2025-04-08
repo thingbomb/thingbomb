@@ -58,7 +58,7 @@ import ToolLayout from "../../layouts/ToolLayout.astro";
 
   input.addEventListener("input", () => {
     const val = input.value.trim();
-    const color = parseColor(val);
+    const color = parseColor(val.toLowerCase());
 
     if (color) {
       const { hex, rgb, hsl, oklch } = color;
