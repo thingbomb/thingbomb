@@ -160,3 +160,7 @@ article {
     @apply underline;
   }
 }
+
+.convert-button {
+  @apply bg-input border-1 py-1.5 px-3 border-input/30 rounded-lg;
+}

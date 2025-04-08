@@ -32,10 +32,25 @@ interface Props {
   disabled?: boolean;
   readonly?: boolean;
   id?: string;
+  max?: string;
+  step?: string;
+  accept?: string;
+  min?: string;
 }
 
-const { type, className, placeholder, disabled, readonly, id, ...props } =
-  Astro.props;
+const {
+  type,
+  className,
+  placeholder,
+  min,
+  max,
+  step,
+  disabled,
+  readonly,
+  accept,
+  id,
+  ...props
+} = Astro.props;
 ---
 
 <input
@@ -51,5 +66,9 @@ const { type, className, placeholder, disabled, readonly, id, ...props } =
   disabled={disabled}
   readonly={readonly}
   id={id}
+  min={min}
+  max={max}
+  step={step}
+  accept={accept}
   {...props}
 />

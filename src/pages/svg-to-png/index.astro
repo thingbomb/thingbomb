@@ -1,0 +1,19 @@
+---
+import ImageConverterLayout from "../../layouts/ImageConverterLayout.astro";
+---
+
+<ImageConverterLayout
+  title="SVG to PNG - free online tools"
+  shortTitle="SVG to PNG"
+  description="Convert SVG to PNG with adjustable scaling - free online tool."
+  inputType="svg"
+  outputType="png"
+  inputLabel="Upload SVG file"
+  outputLabel="Download PNG"
+  acceptTypes="image/svg+xml"
+  quality={1.0}
+  allowScaling={true}
+  minScale={0.1}
+  maxScale={10}
+  defaultScale={1}
+/>
