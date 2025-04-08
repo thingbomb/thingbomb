@@ -1,0 +1,26 @@
+---
+import Input from "../../components/ui/input.astro";
+import ToolLayout from "../../layouts/ToolLayout.astro";
+---
+
+<ToolLayout
+  title="Base64 encoder/decoder - free online tools"
+  shortTitle="Base64 encode/decode"
+  description="Encode and decode text quickly with this free online tool."
+>
+  <Input id="encode" type="text" placeholder="Encode" className="mt-2" />
+  <Input id="decode" type="text" placeholder="Decode" className="mt-2" />
+</ToolLayout>
+
+<script is:inline>
+  const encode = document.getElementById("encode");
+  const decode = document.getElementById("decode");
+
+  encode.addEventListener("input", () => {
+    decode.value = btoa(encode.value);
+  });
+
+  decode.addEventListener("input", () => {
+    encode.value = atob(decode.value);
+  });
+</script>
