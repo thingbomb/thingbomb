@@ -75,22 +75,6 @@ import ToolLayout from "../../layouts/ToolLayout.astro";
         return { r, g, b };
       }
 
-      // OKLCH to RGB (approximated)
-      if (
-        /^oklch\((\d+(\.\d+)?),\s*(\d+(\.\d+)?),\s*(\d+(\.\d+)?)\)$/i.test(
-          color
-        )
-      ) {
-        let [l, c, h] = color.match(/\d+(\.\d+)?/g).map(Number);
-        h = (h / 360) * 2 * Math.PI; // Convert from degrees to radians
-
-        let x = c * Math.cos(h);
-        let y = c * Math.sin(h);
-        let z = (l + 0.5) * 255;
-
-        return { r: Math.round(x), g: Math.round(y), b: Math.round(z) };
-      }
-
       throw new Error("Unsupported color format");
     }
 

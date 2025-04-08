@@ -5,9 +5,10 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description: string;
+  shortTitle: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, shortTitle } = Astro.props;
 ---
 
 <!doctype html>
@@ -16,7 +17,20 @@ const { title, description } = Astro.props;
     <BaseHead title={title} description={description} />
   </head>
   <body class="font-sans dark">
-    <slot />
+    <div class="wrapper absolute inset-0 flex justify-center items-center">
+      <article class="p-6 bg-zinc-950 h-fit text-white max-w-2xl text-center">
+        <p class="text-[16px] font-normal tracking-tight !mb-1">
+          {description}
+        </p>
+        <slot class="h-fit" />
+        <footer class="p-6 text-[15px] flex flex-wrap gap-6 justify-center">
+          <a href="/" class="text-[16px] !text-zinc-100 tracking-tight">Home</a>
+          <a href="/privacy" class="text-[16px] !text-zinc-100 tracking-tight"
+            >Privacy Policy</a
+          >
+        </footer>
+      </article>
+    </div>
   </body>
 </html>
 

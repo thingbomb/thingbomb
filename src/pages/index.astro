@@ -1,77 +1,53 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
-const tools = [
-  {
-    name: "Color converter",
-    href: "/color",
-  },
-  {
-    name: "Text reverser",
-    href: "/reverse",
-  },
-  {
-    name: "Base64 encode/decode",
-    href: "/base64",
-  },
-  {
-    name: "Word counter",
-    href: "/word-counter",
-  },
-  {
-    name: "Character counter",
-    href: "/character-counter",
-  },
-  {
-    name: "Case changer",
-    href: "/case-changer",
-  },
-  {
-    name: "Color mixer",
-    href: "/color-mixer",
-  },
-  {
-    name: "Color inverter",
-    href: "/color-inverter",
-  },
-  {
-    name: "PNG to WEBP",
-    href: "/png-to-webp",
-  },
-  {
-    name: "WEBP to PNG",
-    href: "/webp-to-png",
-  },
-  {
-    name: "SVG to PNG",
-    href: "/svg-to-png",
-  },
-];
 ---
 
 <Layout
-  title="Thingbomb - simple, quick tools"
-  description="Thingbomb lets you get things done by giving you fast, simple tools that cost nothing."
+  title="Thingbomb - fast and simple tools"
+  description="Thingbomb makes high-quality, free tools. Start using them today."
+  shortTitle="Thingbomb"
 >
-  <article class="p-6 bg-zinc-950 h-fit text-white">
-    <h1 class="text-3xl font-bold !m-0">Thingbomb</h1>
-    <div class="tools flex gap-2 flex-wrap mt-3">
-      {
-        tools.map((tool) => (
-          <a
-            href={tool.href}
-            class="border-1 !m-0 !text-foreground !no-underline border-input bg-input/30 p-2 rounded-xl w-fit px-4 text-sm hover:bg-zinc-800"
-          >
-            <span class="text-lg font-medium">{tool.name}</span>
-          </a>
-        ))
-      }
+  <div class="tools flex space-x-6 space-y-2 flex-wrap mt-3 justify-center">
+    <div class="text-left">
+      <span class="text-foreground font-bold select-none">Colors</span>
+      <div
+        class="flex text-left flex-col *:!text-zinc-800 dark:*:!text-zinc-200 select-none"
+      >
+        <a href="/color">Color converter</a>
+        <a href="/color-mixer">Color mixer</a>
+        <a href="/color-inverter">Color inverter</a>
+        <a href="/random-color">Random color</a>
+      </div>
     </div>
-  </article>
-  <footer class="p-6 text-lg flex flex-wrap gap-6">
-    <a href="/" class="text-zinc-400 hover:text-zinc-200">Home</a>
-    <a href="/privacy" class="text-zinc-400 hover:text-zinc-200"
-      >Privacy Policy</a
-    >
-  </footer>
+    <div class="text-left">
+      <span class="text-foreground font-bold select-none">Images</span>
+      <div
+        class="flex text-left flex-col *:!text-zinc-800 dark:*:!text-zinc-200 select-none"
+      >
+        <a href="/png-to-webp">PNG to WEBP</a>
+        <a href="/webp-to-png">WEBP to PNG</a>
+        <a href="/svg-to-png">SVG to PNG</a>
+      </div>
+    </div>
+    <div class="text-left">
+      <span class="text-foreground font-bold select-none">Text</span>
+      <div
+        class="flex text-left flex-col *:!text-zinc-800 dark:*:!text-zinc-200 select-none"
+      >
+        <a href="/character-counter">Character counter</a>
+        <a href="/word-counter">Word counter</a>
+        <a href="/case-changer">Case changer</a>
+        <a href="/reverse">Text reverser</a>
+      </div>
+    </div>
+    <div class="text-left">
+      <span class="text-foreground font-bold select-none">Special</span>
+      <div
+        class="flex text-left flex-col *:!text-zinc-800 dark:*:!text-zinc-200 select-none"
+      >
+        <a href="/base64">Base64 encode</a>
+        <a href="/base64">Base64 decode</a>
+      </div>
+    </div>
+  </div>
 </Layout>

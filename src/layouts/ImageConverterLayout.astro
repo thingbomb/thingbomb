@@ -39,7 +39,7 @@ const showScalingOption = allowScaling;
 
 <ToolLayout title={title} shortTitle={shortTitle} description={description}>
   <div class="container pt-2 text-white">
-    <div class="flex flex-col gap-4 max-w-xl">
+    <div class="flex flex-col gap-2 max-w-xl">
       <div>
         <Input
           id="fileInput"
@@ -49,13 +49,14 @@ const showScalingOption = allowScaling;
         />
         <label
           for="fileInput"
-          class="convert-button cursor-pointer inline-block">{inputLabel}</label
+          class="h-9 rounded-md border-1 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-[1.02] flex items-center justify-center"
+          >{inputLabel}</label
         >
         <span id="fileName" class="ml-2 text-sm text-zinc-400"></span>
       </div>
 
       <div id="imagePreviewContainer" class="hidden">
-        <h3 class="mb-2">Preview:</h3>
+        <h3 class="mb-2 text-left !text-lg">Preview</h3>
         <img
           id="preview"
           src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
@@ -88,9 +89,12 @@ const showScalingOption = allowScaling;
         }
 
         <div class="mt-4">
-          <button class="convert-button" id="actionBtn"
-            >Convert to {outputType.toUpperCase()}</button
+          <button
+            class="h-9 rounded-md border-1 mt-2 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-[1.02] flex items-center justify-center"
+            id="actionBtn"
           >
+            Convert to {outputType.toUpperCase()}
+          </button>
         </div>
 
         <div id="conversionStatus" class="mt-2 text-sm text-zinc-400 hidden">
@@ -242,7 +246,8 @@ const showScalingOption = allowScaling;
 
       // Reset button to convert state when a new file is uploaded
       actionBtn.textContent = `Convert to ${outputType.toUpperCase()}`;
-      actionBtn.className = "convert-button";
+      actionBtn.className =
+        "h-9 rounded-md border-1 mt-2 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-[1.02] flex items-center justify-center";
       convertedImageData = null;
     };
     reader.readAsDataURL(file);
