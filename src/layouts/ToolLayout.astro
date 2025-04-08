@@ -5,9 +5,10 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description: string;
+  shortTitle: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, shortTitle } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,7 +18,7 @@ const { title, description } = Astro.props;
   </head>
   <body class="font-sans dark">
     <article class="p-6 bg-zinc-950 h-fit text-white">
-      <h1 class="text-3xl font-bold !m-0">HEX to RGB</h1>
+      <h1 class="text-3xl font-bold !m-0">{shortTitle}</h1>
       <slot class="h-fit" />
     </article>
     <footer class="p-6 text-lg flex flex-wrap gap-6">

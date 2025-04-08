@@ -5,6 +5,7 @@ import ToolLayout from "../../layouts/ToolLayout.astro";
 
 <ToolLayout
   title="Color converter - free online tools"
+  shortTitle="Color converter"
   description="Convert many color formats quickly with this free online tool."
 >
   <Input
@@ -14,30 +15,12 @@ import ToolLayout from "../../layouts/ToolLayout.astro";
     className="mt-2"
   />
 
-  <div
-    id="color-preview"
-    style="display: none;"
-    class="mt-2 h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105"
-  >
-    <p
-      id="color-preview-text"
-      class="text-lg font-medium w-full h-full flex items-center justify-center"
-    >
-      Color Preview
-    </p>
-  </div>
-
+  <!-- Copy buttons in uniform preview style -->
   <div
     id="copy-options"
-    class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2"
+    class="grid grid-cols-1 sm:grid-cols-4 gap-2 mt-2"
     style="display: none;"
   >
-    <div
-      id="copy-hex"
-      class="h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
-    >
-      HEX
-    </div>
     <div
       id="copy-rgb"
       class="h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
@@ -45,46 +28,56 @@ import ToolLayout from "../../layouts/ToolLayout.astro";
       RGB
     </div>
     <div
+      id="copy-hex"
+      class="h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
+    >
+      HEX
+    </div>
+    <div
       id="copy-hsl"
       class="h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
     >
       HSL
     </div>
+    <div
+      id="copy-oklch"
+      class="h-9 rounded-md border-1 border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-105 flex items-center justify-center"
+    >
+      OKLCH
+    </div>
   </div>
 </ToolLayout>
 
 <script is:inline>
-  const colorInput = document.getElementById("color-input");
-  const colorPreview = document.getElementById("color-preview");
-  const previewText = document.getElementById("color-preview-text");
-
+  const input = document.getElementById("color-input");
   const copyHex = document.getElementById("copy-hex");
   const copyRgb = document.getElementById("copy-rgb");
   const copyHsl = document.getElementById("copy-hsl");
+  const copyOklch = document.getElementById("copy-oklch");
   const copyOptions = document.getElementById("copy-options");
 
-  colorInput.addEventListener("input", () => {
-    const input = colorInput.value.trim();
-    const parsed = parseColor(input);
+  input.addEventListener("input", () => {
+    const val = input.value.trim();
+    const color = parseColor(val);
 
-    if (parsed) {
-      const { hex, rgb, hsl } = parsed;
+    if (color) {
+      const { hex, rgb, hsl, oklch } = color;
 
-      colorPreview.style.backgroundColor = hex;
-      previewText.textContent = rgb;
-      colorPreview.style.color = getTextColor(hex);
-      colorPreview.style.display = "block";
+      copyRgb.style.backgroundColor = hex;
+      copyRgb.style.color = getTextColor(hex);
       copyOptions.style.display = "grid";
-
-      copyHex.textContent = hex;
-      copyRgb.textContent = rgb;
-      copyHsl.textContent = hsl;
 
       setupCopy(copyHex, hex);
       setupCopy(copyRgb, rgb);
       setupCopy(copyHsl, hsl);
+      setupCopy(copyOklch, oklch);
+
+      copyHex.textContent = hex;
+      copyRgb.textContent = rgb;
+      copyHsl.textContent = hsl;
+      copyOklch.textContent = oklch;
     } else {
-      colorPreview.style.display = "none";
+      preview.style.display = "none";
       copyOptions.style.display = "none";
     }
   });
@@ -115,8 +108,9 @@ import ToolLayout from "../../layouts/ToolLayout.astro";
     const hex = rgbToHex(r, g, b);
     const rgb = `rgb(${r}, ${g}, ${b})`;
     const hsl = rgbToHsl(r, g, b);
+    const oklch = rgbToOklch(r, g, b);
 
-    return { hex, rgb, hsl };
+    return { hex, rgb, hsl, oklch };
   }
 
   function rgbToHex(r, g, b) {
@@ -130,7 +124,7 @@ import ToolLayout from "../../layouts/ToolLayout.astro";
     const max = Math.max(r, g, b),
       min = Math.min(r, g, b);
     let h = 0,
-      s,
+      s = 0,
       l = (max + min) / 2;
 
     if (max !== min) {
@@ -148,19 +142,48 @@ import ToolLayout from "../../layouts/ToolLayout.astro";
           break;
       }
       h /= 6;
-    } else {
-      s = 0;
     }
 
     return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
   }
 
+  function rgbToOklch(r, g, b) {
+    // Convert to linear RGB
+    const srgbToLinear = (v) => {
+      v /= 255;
+      return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    const lr = srgbToLinear(r);
+    const lg = srgbToLinear(g);
+    const lb = srgbToLinear(b);
+
+    // Convert to XYZ
+    const X = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+    const Y = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
+    const Z = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+
+    // Convert to Lab using D65 white point
+    const f = (t) =>
+      t > 216 / 24389 ? Math.cbrt(t) : (24389 / 27) * t + 16 / 116;
+
+    const L = 116 * f(Y) - 16;
+    const a = 500 * (f(X) - f(Y));
+    const bVal = 200 * (f(Y) - f(Z));
+
+    // Convert to OKLCH using approximations
+    const C = Math.sqrt(a * a + bVal * bVal);
+    const h = (Math.atan2(bVal, a) * 180) / Math.PI;
+    const H = h < 0 ? h + 360 : h;
+
+    return `oklch(${L.toFixed(1)}% ${C.toFixed(3)} ${H.toFixed(1)})`;
+  }
+
   function getTextColor(bgColor) {
-    const tempEl = document.createElement("div");
-    tempEl.style.color = bgColor;
-    document.body.appendChild(tempEl);
-    const computed = getComputedStyle(tempEl).color;
-    document.body.removeChild(tempEl);
+    const temp = document.createElement("div");
+    temp.style.color = bgColor;
+    document.body.appendChild(temp);
+    const computed = getComputedStyle(temp).color;
+    document.body.removeChild(temp);
 
     const match = computed.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)/);
     if (!match) return "black";
