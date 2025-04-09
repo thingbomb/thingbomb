@@ -1,0 +1,31 @@
+---
+import Input from "../../components/ui/input.astro";
+import ToolLayout from "../../layouts/ToolLayout.astro";
+// Don't import `uuidv7` here; we'll import it in the inline script.
+---
+
+<ToolLayout
+  title="UUID - free online tools"
+  shortTitle="UUID"
+  description="Generate a random uuid7 in your browser."
+>
+  <button
+    id="generate-uuid"
+    class="h-9 rounded-md border-1 mt-2 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-[1.02] flex items-center justify-center"
+  >
+    Generate UUIDv7
+  </button>
+  <Input id="result" type="text" placeholder="Result" className="mt-2" />
+</ToolLayout>
+
+<script>
+  import { v7 as uuidv7 } from "uuid";
+
+  const button = document.getElementById("generate-uuid");
+  const result = document.getElementById("result") as HTMLInputElement;
+
+  button?.addEventListener("click", () => {
+    const uuid = uuidv7();
+    result.value = uuid;
+  });
+</script>

@@ -9,7 +9,11 @@ import Input from "../../components/ui/input.astro";
   description="Convert non-square images to square images with automatic or custom padding."
 >
   <div class="container pt-1 text-white">
-    <div class="flex flex-col gap-1 max-w-xl">
+    <div class="flex flex-col gap-1 max-w-xl" id="dropZone">
+      <!-- Drop zone indicator that appears when dragging -->
+      <div id="dropIndicator" class="absolute inset-0 bg-blue-900/50 border-2 border-dashed border-blue-400 rounded-lg hidden items-center justify-center">
+        <div class="text-white text-lg font-bold">Drop image here</div>
+      </div>
       <div class="flex items-center">
         <Input id="fileInput" type="file" accept="image/*" className="hidden" />
         <label
@@ -72,6 +76,8 @@ import Input from "../../components/ui/input.astro";
   // Get DOM elements
   const fileInput = document.getElementById("fileInput") as HTMLInputElement;
   const fileName = document.getElementById("fileName") as HTMLElement;
+  const dropZone = document.getElementById("dropZone") as HTMLElement;
+  const dropIndicator = document.getElementById("dropIndicator") as HTMLElement;
   // No size input, we'll use the larger dimension
   const colorMode = document.getElementById("colorMode") as HTMLSelectElement;
   const customColorContainer = document.getElementById(
@@ -120,10 +126,35 @@ import Input from "../../components/ui/input.astro";
       processImage();
     }
   });
-
-  // Handle file selection
-  fileInput.addEventListener("change", (event) => {
-    const file = (event.target as HTMLInputElement).files?.[0];
+  
+  // Setup drag and drop functionality
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  function preventDefaults(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  // Handle drag enter and drag over to show drop indicator
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => {
+      dropIndicator.classList.remove('hidden');
+      dropIndicator.classList.add('flex');
+    }, false);
+  });
+  
+  // Handle drag leave and drop to hide drop indicator
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => {
+      dropIndicator.classList.add('hidden');
+      dropIndicator.classList.remove('flex');
+    }, false);
+  });
+  
+  // Function to handle files from both drag-drop and file input
+  function handleFiles(file: File) {
     if (!file) return;
 
     // Check if the file is an image
@@ -165,6 +196,22 @@ import Input from "../../components/ui/input.astro";
       originalImage!.src = e.target!.result as string;
     };
     reader.readAsDataURL(file);
+  }
+  
+  // Handle actual drop
+  dropZone.addEventListener('drop', (e: DragEvent) => {
+    if (e.dataTransfer && e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      handleFiles(e.dataTransfer.files[0]);
+    }
+  }, false);
+  
+  // Handle file selection
+  fileInput.addEventListener("change", (event) => {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      handleFiles(file);
+    }
   });
 
   // Process image function is called directly when needed

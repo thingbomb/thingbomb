@@ -1,0 +1,47 @@
+---
+import Input from "../../components/ui/input.astro";
+import ToolLayout from "../../layouts/ToolLayout.astro";
+---
+
+<ToolLayout
+  title="QR code generator - free online tools"
+  shortTitle="QR code generator"
+  description="Turn text into a QR code quickly with this tool."
+>
+  <Input id="text" type="text" placeholder="Enter text" className="mt-2" />
+  <button
+    id="generate-qr"
+    disabled
+    class="h-9 rounded-md border-1 mt-2 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-[1.02] flex items-center justify-center"
+  >
+    Start typing
+  </button>
+  <span class="text-sm text-muted-foreground mt-2"
+    >You are solely responsible for the QR codes you generate using this tool,
+    and we are not liable for any consequences resulting from their use.</span
+  >
+  <canvas id="qr" class="mt-2 rounded-sm mx-auto h-0 w-0"></canvas>
+</ToolLayout>
+
+<script>
+  import QRCode from "qrcode";
+  const text = document.getElementById("text") as HTMLInputElement;
+  const generateQr = document.getElementById(
+    "generate-qr"
+  ) as HTMLButtonElement;
+  const qr = document.getElementById("qr") as HTMLCanvasElement;
+
+  text.addEventListener("input", () => {
+    generateQr.textContent =
+      text.value.length === 0 ? "Start typing" : `Generate QR code`;
+    generateQr.disabled = text.value.length === 0;
+  });
+
+  generateQr.addEventListener("click", () => {
+    QRCode.toCanvas(document.getElementById("qr"), text.value, (error) => {
+      if (error) {
+        console.error(error);
+      }
+    });
+  });
+</script>
