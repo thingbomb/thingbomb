@@ -1,0 +1,48 @@
+---
+import ToolLayout from "../../layouts/ToolLayout.astro";
+import Textarea from "../../components/ui/textarea.astro";
+---
+
+<ToolLayout
+  title="JSON formatter - free online tools"
+  shortTitle="JSON formatter"
+  description="Format JSON quickly with this free online tool."
+>
+  <Textarea id="text" placeholder="Enter text" className="mt-2" />
+  <div class="flex gap-2 items-center justify-center">
+    <button
+      id="format"
+      disabled
+      class="h-9 rounded-md border-1 mt-2 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-[1.02] flex items-center justify-center"
+    >
+      Start typing
+    </button>
+  </div>
+  <Textarea
+    id="result"
+    placeholder="Formatted JSON"
+    disabled
+    readonly
+    className="mt-2"
+  />
+</ToolLayout>
+
+<script is:inline>
+  const text = document.getElementById("text");
+  const format = document.getElementById("format");
+
+  text.addEventListener("input", () => {
+    format.textContent = text.value.length === 0 ? "Start typing" : `Format`;
+    format.disabled = text.value.length === 0;
+  });
+
+  format.addEventListener("click", () => {
+    const result = JSON.stringify(JSON.parse(text.value), null, 2);
+    document.getElementById("result").value = result;
+    if (result.length <= 0) {
+      document.getElementById("result").disabled = true;
+    } else {
+      document.getElementById("result").disabled = false;
+    }
+  });
+</script>
