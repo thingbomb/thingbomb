@@ -1,0 +1,313 @@
+---
+import ToolLayout from "../../layouts/ToolLayout.astro";
+import Input from "../../components/ui/input.astro";
+---
+
+<ToolLayout
+  title="Square Image Generator - free online tools"
+  shortTitle="Square Image Generator"
+  description="Convert non-square images to square images with automatic or custom padding."
+>
+  <div class="container pt-1 text-white">
+    <div class="flex flex-col gap-1 max-w-xl">
+      <div class="flex items-center">
+        <Input id="fileInput" type="file" accept="image/*" className="hidden" />
+        <label
+          for="fileInput"
+          class="h-8 rounded-md border-1 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input scale-100 select-none cursor-pointer transition-all hover:scale-[1.02] flex items-center justify-center px-4"
+          >Upload Image</label
+        >
+        <span
+          id="fileName"
+          class="ml-2 text-sm text-zinc-400 truncate max-w-[200px]"></span>
+
+        <!-- Padding color selection is now inline -->
+        <div class="ml-auto flex items-center gap-1">
+          <select
+            id="colorMode"
+            class="h-8 text-sm rounded-md border-1 border-input bg-input/30 px-2"
+          >
+            <option value="auto">Auto-detect color</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div id="customColorContainer" class="hidden">
+            <Input
+              id="customColor"
+              type="color"
+              value="#000000"
+              className="w-8 h-8 p-1"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div id="imagePreviewContainer" class="mt-2 hidden">
+        <div
+          class="border-1 border-input/30 rounded-lg p-1 bg-input/20 flex items-center justify-center"
+        >
+          <canvas id="preview" class="max-w-full max-h-[300px] rounded-lg"
+          ></canvas>
+        </div>
+        <div
+          class="flex justify-between items-center mt-1 text-xs text-zinc-400"
+        >
+          <div>
+            <span>Original: <span id="originalSize">-</span></span>
+            <span class="mx-1">|</span>
+            <span>Square: <span id="newSize">-</span></span>
+          </div>
+          <button
+            id="downloadBtn"
+            class="h-6 text-white text-sm rounded-md border-1 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input scale-100 select-none cursor-pointer transition-all hover:scale-[1.02] items-center justify-center px-2 hidden"
+          >
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<script>
+  // Get DOM elements
+  const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+  const fileName = document.getElementById("fileName") as HTMLElement;
+  // No size input, we'll use the larger dimension
+  const colorMode = document.getElementById("colorMode") as HTMLSelectElement;
+  const customColorContainer = document.getElementById(
+    "customColorContainer"
+  ) as HTMLElement;
+  const customColor = document.getElementById(
+    "customColor"
+  ) as HTMLInputElement;
+  const downloadBtn = document.getElementById(
+    "downloadBtn"
+  ) as HTMLButtonElement;
+  const imagePreviewContainer = document.getElementById(
+    "imagePreviewContainer"
+  ) as HTMLElement;
+  const preview = document.getElementById("preview") as HTMLCanvasElement;
+  const originalSizeEl = document.getElementById("originalSize") as HTMLElement;
+  const newSizeEl = document.getElementById("newSize") as HTMLElement;
+
+  // Canvas context
+  const ctx = preview.getContext("2d")!;
+
+  // State variables
+  let currentImageData: string | null = null;
+  let originalImage: HTMLImageElement | null = null;
+  let originalWidth = 0;
+  let originalHeight = 0;
+  let dominantEdgeColor = "#000000";
+
+  // Show/hide custom color input based on selected mode and reprocess image
+  colorMode.addEventListener("change", () => {
+    if (colorMode.value === "custom") {
+      customColorContainer.classList.remove("hidden");
+    } else {
+      customColorContainer.classList.add("hidden");
+    }
+
+    // Reprocess the image if we have one loaded
+    if (originalImage) {
+      processImage();
+    }
+  });
+
+  // Update when custom color changes
+  customColor.addEventListener("input", () => {
+    if (originalImage && colorMode.value === "custom") {
+      processImage();
+    }
+  });
+
+  // Handle file selection
+  fileInput.addEventListener("change", (event) => {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    // Check if the file is an image
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file.");
+      fileInput.value = ""; // Clear the file input
+      return;
+    }
+
+    // Show file name
+    fileName.textContent = file.name;
+
+    // Load image and show preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Create an image object to get the dimensions
+      originalImage = new Image();
+      originalImage.onload = () => {
+        // Store original dimensions
+        originalWidth = originalImage!.width;
+        originalHeight = originalImage!.height;
+
+        // Update original size info
+        originalSizeEl.textContent = `${originalWidth}x${originalHeight}px`;
+
+        // Detect dominant color from edges
+        dominantEdgeColor = detectEdgeColor(originalImage!);
+        customColor.value = dominantEdgeColor;
+
+        // Show preview area
+        imagePreviewContainer.classList.remove("hidden");
+
+        // Process image immediately
+        processImage();
+
+        // Show download button
+        downloadBtn.classList.remove("hidden");
+      };
+      originalImage!.src = e.target!.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Process image function is called directly when needed
+
+  function processImage() {
+    if (!originalImage) return;
+
+    // Use the larger dimension for the square size
+    const outputSize = Math.max(originalWidth, originalHeight);
+
+    // Create a square canvas with the larger dimension
+    preview.width = outputSize;
+    preview.height = outputSize;
+
+    // Get padding color
+    const paddingColor =
+      colorMode.value === "auto" ? dominantEdgeColor : customColor.value;
+
+    // Fill canvas with padding color
+    ctx.fillStyle = paddingColor;
+    ctx.fillRect(0, 0, outputSize, outputSize);
+
+    // Keep the original dimensions and center in the square canvas
+    const x = Math.floor((outputSize - originalWidth) / 2);
+    const y = Math.floor((outputSize - originalHeight) / 2);
+
+    // Draw the image centered within the square with original dimensions
+    ctx.drawImage(originalImage!, x, y, originalWidth, originalHeight);
+
+    // Update size info
+    newSizeEl.textContent = `${outputSize}x${outputSize}px`;
+
+    // Store current image data for download
+    currentImageData = preview.toDataURL("image/png");
+
+    // Show download button
+    downloadBtn.classList.remove("hidden");
+  }
+
+  // Download the processed image
+  downloadBtn.addEventListener("click", () => {
+    if (currentImageData) {
+      const link = document.createElement("a");
+      const size = Math.max(originalWidth, originalHeight);
+
+      // Extract original file name without extension
+      const originalName =
+        fileName.textContent!.split(".").slice(0, -1).join(".") || "image";
+
+      // Create filename with dimensions
+      const filename = `${originalName}-square-${size}px.png`;
+
+      link.download = filename;
+      link.href = currentImageData;
+      link.click();
+    }
+  });
+
+  // Helper function to draw image preview
+  function drawImagePreview(image: HTMLImageElement) {
+    // Set canvas size to match the preview area constraints
+    const maxPreviewWidth = 300;
+    const maxPreviewHeight = 300;
+
+    // Calculate dimensions to fit within preview area
+    let previewWidth, previewHeight;
+    if (originalWidth > originalHeight) {
+      // Landscape orientation
+      previewWidth = Math.min(maxPreviewWidth, originalWidth);
+      previewHeight = (originalHeight / originalWidth) * previewWidth;
+    } else {
+      // Portrait or square orientation
+      previewHeight = Math.min(maxPreviewHeight, originalHeight);
+      previewWidth = (originalWidth / originalHeight) * previewHeight;
+    }
+
+    // Set canvas dimensions
+    preview.width = previewWidth;
+    preview.height = previewHeight;
+
+    // Draw the image
+    ctx.drawImage(image, 0, 0, previewWidth, previewHeight);
+  }
+
+  // Helper function to detect dominant color from image edges
+  function detectEdgeColor(image: HTMLImageElement): string {
+    // Create a temporary canvas to analyze the image
+    const tempCanvas = document.createElement("canvas");
+    const tempCtx = tempCanvas.getContext("2d")!;
+    tempCanvas.width = image.width;
+    tempCanvas.height = image.height;
+
+    // Draw the image to the temporary canvas
+    tempCtx.drawImage(image, 0, 0);
+
+    // Sample points from the edges (1 pixel in from each edge)
+    const samplePoints = [];
+    const sampleSize = 10; // Number of sample points per edge
+    const margin = 1; // How far in from the edge to sample
+
+    // Top edge
+    for (let i = 0; i < sampleSize; i++) {
+      const x = Math.floor((image.width / sampleSize) * i);
+      samplePoints.push({ x, y: margin });
+    }
+
+    // Bottom edge
+    for (let i = 0; i < sampleSize; i++) {
+      const x = Math.floor((image.width / sampleSize) * i);
+      samplePoints.push({ x, y: image.height - margin - 1 });
+    }
+
+    // Left edge
+    for (let i = 0; i < sampleSize; i++) {
+      const y = Math.floor((image.height / sampleSize) * i);
+      samplePoints.push({ x: margin, y });
+    }
+
+    // Right edge
+    for (let i = 0; i < sampleSize; i++) {
+      const y = Math.floor((image.height / sampleSize) * i);
+      samplePoints.push({ x: image.width - margin - 1, y });
+    }
+
+    // Get pixel data for each sample point
+    let rSum = 0,
+      gSum = 0,
+      bSum = 0;
+
+    for (const point of samplePoints) {
+      const pixelData = tempCtx.getImageData(point.x, point.y, 1, 1).data;
+      rSum += pixelData[0];
+      gSum += pixelData[1];
+      bSum += pixelData[2];
+    }
+
+    // Calculate average color
+    const totalSamples = samplePoints.length;
+    const avgR = Math.round(rSum / totalSamples);
+    const avgG = Math.round(gSum / totalSamples);
+    const avgB = Math.round(bSum / totalSamples);
+
+    // Convert to hex
+    return `#${((1 << 24) | (avgR << 16) | (avgG << 8) | avgB).toString(16).slice(1)}`;
+  }
+</script>
