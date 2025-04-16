@@ -17,8 +17,10 @@ const { title, description, shortTitle } = Astro.props;
     <BaseHead title={title} description={description} />
   </head>
   <body class="font-sans dark">
-    <div class="wrapper absolute inset-0 flex justify-center items-center">
-      <article class="p-6 bg-zinc-950 h-fit text-white max-w-2xl text-center">
+    <div class="wrapper h-screen w-screen">
+      <article
+        class="p-6 bg-zinc-950 h-fit text-white max-w-2xl text-center m-auto pt-12"
+      >
         <p class="text-[16px] font-normal tracking-tight !mb-1">
           {description}
         </p>
