@@ -1,0 +1,38 @@
+---
+import Input from "../../components/ui/input.astro";
+import ToolLayout from "../../layouts/ToolLayout.astro";
+---
+
+<ToolLayout
+    title="Video player - Thingbomb"
+    shortTitle="Video player"
+    description="Upload a video file and play it back."
+>
+    <div class="flex flex-col gap-4">
+        <div>
+            <Input
+                id="fileInput"
+                type="file"
+                accept={"video/*"}
+                className="hidden"
+            />
+            <label
+                for="fileInput"
+                class="h-9 rounded-md border-1 bg-blue-600 disabled:opacity-50 disabled:!scale-100 disabled:cursor-not-allowed border-input w-full scale-100 select-none cursor-pointer transition-all transform-content hover:scale-[1.02] flex items-center justify-center"
+                >Upload video (local)</label
+            >
+        </div>
+        <video controls class="w-full h-full rounded-lg" id="video"></video>
+    </div>
+</ToolLayout>
+
+<script>
+    const video = document.getElementById("video") as HTMLVideoElement;
+    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+
+    fileInput.addEventListener("change", async (e) => {
+        const file = (e.target as any).files[0];
+        const url = URL.createObjectURL(file);
+        video.src = url;
+    });
+</script>
